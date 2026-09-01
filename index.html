@@ -33,9 +33,57 @@
     .label { font-weight: bold; color: GrayText; font-size: 0.85em; margin-bottom: 0.3em; }
     hr { border: none; border-top: 1px solid GrayText; margin: 2em 0; }
     a { color: light-dark(#0969da, #58a6ff); }
+    nav.toc {
+      position: fixed; top: 1em; right: 1em; width: 220px;
+      background: light-dark(#f6f8fa, #161b22);
+      border: 1px solid light-dark(#d0d7de, #30363d);
+      border-radius: 6px; padding: 0.8em 1em; font-size: 0.85em;
+    }
+    nav.toc ol { padding-left: 1.2em; margin: 0.3em 0 0 0; }
+    nav.toc ol ol { padding-left: 1.2em; margin: 0.1em 0; }
+    nav.toc li { margin: 0.2em 0; }
+    nav.toc a { text-decoration: none; }
+    nav.toc a:hover { text-decoration: underline; }
+    @media (max-width: 1200px) {
+      nav.toc { position: static; width: auto; margin-bottom: 2em; }
+    }
   </style>
 </head>
 <body>
+
+<nav class="toc">
+  <strong>Table of Contents</strong>
+  <ol>
+    <li><a href="#ai-agent">AI Agent</a>
+      <ol>
+        <li><a href="#ai-agent">.AI_INIT.md</a></li>
+        <li><a href="#ai-agent">Project Directory Structure</a></li>
+      </ol>
+    </li>
+    <li><a href="#bash-shell-script">Bash Shell Script</a>
+      <ol>
+        <li><a href="#bash-inline">Inline Script</a></li>
+        <li><a href="#bash-errexit">errexit Behavior</a></li>
+        <li><a href="#bash-nounset">nounset Behavior</a></li>
+        <li><a href="#bash-functions">Functions</a></li>
+        <li><a href="#bash-xtrace">xtrace and Logging</a></li>
+        <li><a href="#bash-input">Input Validation</a></li>
+        <li><a href="#bash-variables">Variables</a></li>
+        <li><a href="#bash-output">Output Redirection</a></li>
+        <li><a href="#bash-secrets">Handling Secrets</a></li>
+      </ol>
+    </li>
+    <li><a href="#github">GitHub</a>
+      <ol>
+        <li><a href="#gh-general">General Guidance</a></li>
+        <li><a href="#gh-rebase">Rebasing</a></li>
+        <li><a href="#gh-squash">Squashing PR Commits</a></li>
+        <li><a href="#gh-pr-workflow">Pull Request Workflow</a></li>
+      </ol>
+    </li>
+    <li><a href="#container-image">Container Image</a></li>
+  </ol>
+</nav>
 
 <h1>Best Practices</h1>
 <p>
@@ -46,7 +94,7 @@
 </p>
 
 <!-- ================================================================ -->
-<h1 id="ai-agent">AI Agent</h1>
+<h1 id="ai-agent">1. AI Agent</h1>
 <!-- ================================================================ -->
 
 <p>
@@ -229,7 +277,7 @@ Scope: Each `.AI_HISTORY.md` tracks changes in its directory and sub-directories
 
 
 <!-- ================================================================ -->
-<h1 id="bash-shell-script">Bash Shell Script</h1>
+<h1 id="bash-shell-script">2. Bash Shell Script</h1>
 <!-- ================================================================ -->
 
 <p>
@@ -246,7 +294,7 @@ Scope: Each `.AI_HISTORY.md` tracks changes in its directory and sub-directories
   It also helps catch errors early by treating unset variables as errors, by enabling shell option <code>nounset</code>.
 </p>
 
-<h3>Inline Script</h3>
+<h3 id="bash-inline">Inline Script</h3>
 <pre><code>bash -o pipefail -O inherit_errexit -euxc "$(cat - 0&lt;&lt;'cmdEOF'
  ...inlineScriptContent...
  true
@@ -263,6 +311,7 @@ set -euxo pipefail; shopt -s inherit_errexit
 ...scriptFileContent...
 true</code></pre>
 
+<h3 id="bash-errexit"><code>errexit</code> Behavior</h3>
 <p>
   When <code>errexit</code> is enabled, the script execution works as follows:
 </p>
@@ -356,7 +405,7 @@ MayFailFuncBad || MayFailFuncGood
 
 true</code></pre>
 
-<h3><code>nounset</code> Behavior</h3>
+<h3 id="bash-nounset"><code>nounset</code> Behavior</h3>
 <p>
   When <code>nounset</code> is enabled, it is very important to always declare shell variables (both global and local) before
   using them. For variables that are defined outside the script, such as environment variables, it is best to provide default
@@ -381,7 +430,7 @@ echo "${shellVar}"
 
 true</code></pre>
 
-<h3>Functions</h3>
+<h3 id="bash-functions">Functions</h3>
 <p>
   Use functions to encapsulate logic and improve readability. This makes it easier to understand and maintain the script.
 </p>
@@ -396,7 +445,7 @@ true</code></pre>
   <li>Use <code>PascalCase</code> (preferred, it is shorter) or <code>Capital_Snake_Case</code>.</li>
 </ul>
 
-<h3><code>xtrace</code> and Logging</h3>
+<h3 id="bash-xtrace"><code>xtrace</code> and Logging</h3>
 <p>
   When <code>xtrace</code> is enabled, avoid using commands like <code>echo</code>, <code>printf</code>, etc. for regular
   output, as it will clutter the log with redundant information. Generally speaking, since <code>xtrace</code> will print
@@ -429,7 +478,7 @@ fi
 
 true</code></pre>
 
-<h3>Input Validation</h3>
+<h3 id="bash-input">Input Validation</h3>
 <p>
   Add comments to explain the purpose of the script, the parameters it accepts, and any non-obvious logic within the script.
 </p>
@@ -474,7 +523,7 @@ function HelperNoUseMsg () {
 
 true</code></pre>
 
-<h3>Variables</h3>
+<h3 id="bash-variables">Variables</h3>
 <p>
   Handling and using variables properly is crucial for writing robust shell scripts:
 </p>
@@ -554,7 +603,7 @@ unset ONE_TIME_ENV_SECRET_VAR
 
 true</code></pre>
 
-<h3>Output Redirection</h3>
+<h3 id="bash-output">Output Redirection</h3>
 <p>
   If the STDOUT of a command is not needed, redirect it to <code>/dev/null</code> to avoid cluttering the output and improve
   performance. This is especially important in CI environments where excessive output can lead to timeouts or log size limits.
@@ -564,7 +613,7 @@ true</code></pre>
   post-mortem analysis.
 </p>
 
-<h3>Handling Secrets</h3>
+<h3 id="bash-secrets">Handling Secrets</h3>
 <p>
   Handling sensitive data (secrets), such as passwords, API keys, tokens, etc., require special care to avoid accidental exposure:
 </p>
@@ -695,12 +744,12 @@ oc create secret docker-registry pull-secret \
 
 
 <!-- ================================================================ -->
-<h1 id="github">GitHub</h1>
+<h1 id="github">3. GitHub</h1>
 <!-- ================================================================ -->
 
 <h2>Working With Fork Repository</h2>
 
-<h3>General Guidance</h3>
+<h3 id="gh-general">General Guidance</h3>
 <ol>
   <li>Write clear and concise Pull Request (PR) Description that accurately describe the PR. This will become Merge Commit
     Message, so other can easily understand the changes implemented by the PR without need to navigate to the PR itself.</li>
@@ -713,7 +762,7 @@ oc create secret docker-registry pull-secret \
     in the Commit. Definitely do NOT use those 2 commands to add updated tracked files. Instead, use <code>git add -u</code>.</li>
 </ol>
 
-<h3>Rebasing onto Upstream Repository Main Branch</h3>
+<h3 id="gh-rebase">Rebasing onto Upstream Repository Main Branch</h3>
 <p>
   To keep the Fork Repository up-to-date with the Upstream Repository, it is best to rebase the Fork Repository Main Branch
   onto the Upstream Repository Main Branch, rather than merging the other way around. This keeps the Commit History clean,
@@ -735,7 +784,7 @@ make update # If this is CI Operator PR.
 git commit --amend --reset-author --no-edit # If this is CI Operator PR.
 git push --force-with-lease origin HEAD</code></pre>
 
-<h3>Squashing PR Commits Before Merging To Upstream Repository Main Branch</h3>
+<h3 id="gh-squash">Squashing PR Commits Before Merging To Upstream Repository Main Branch</h3>
 <p>
   Inside a Pull Request (PR), often there are a significant number of Commits that are made during development and testing.
   Before merging the PR to the Upstream Repository Main Branch, it is best to squash these Commits into a single Commit that
@@ -758,7 +807,7 @@ git push --force-with-lease origin HEAD</code></pre>
 git rebase -i main # Squash ALL Commits to generate a single Commit.
 git push --force-with-lease origin HEAD</code></pre>
 
-<h3>Pull Request Workflow</h3>
+<h3 id="gh-pr-workflow">Pull Request Workflow</h3>
 <p>
   The core GitHub Repositories uses CodeRabbit AI Code Reviewer. However, not all are part of Red Hat Enterprise Organization,
   so it only gets the free tier. This means, there is rate limit on PR Reviews (note: the exact limits below may change; verify
@@ -808,7 +857,7 @@ git push --force-with-lease origin HEAD</code></pre>
 
 
 <!-- ================================================================ -->
-<h1 id="container-image">Container Image</h1>
+<h1 id="container-image">4. Container Image</h1>
 <!-- ================================================================ -->
 
 <h2>Creation</h2>
